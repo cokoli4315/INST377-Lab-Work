@@ -39,7 +39,7 @@ a {
   text-decoration: none;
 }
 
-h2 {
+h2, h3 {
   margin:0;
   padding:0;
   padding-bottom:1.5rem;
@@ -127,19 +127,23 @@ form {
   margin: 0 auto;
 }
 
+
 .left_section {
-  background-color: rgba(0, 139, 139, 0.8);
+  background-color: rgba(187, 39, 19, 0.8);
   flex: 0 1 auto;
   margin: 1rem;
   padding: 1.5rem;
 }
 
 .right_section {
-  background-color: rgba(255, 224, 138, 0.7);
+  background-color: rgba(82, 31, 139, 0.7);
   flex: 1 2 auto;
   margin: 1rem;
   align-items: center;
+  justify-content: center;
   max-width: 450px;
+  display: flex;
+  flex-direction: column;
 }
 
 /*
@@ -150,6 +154,7 @@ form {
 
 .footer {
   flex-shrink: 0;
+  border: 2px dashed;
   padding: 1rem;
   background-color: rgba(0, 139, 139, 0.8);
   font-size: 1.2rem;
