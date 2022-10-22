@@ -1,9 +1,52 @@
-<!--
-    This is how to build the CSS-only load animation from loading.io    
-    <div class="lds-ellipsis"><div></div><div></div><div></div><div></div></div>
+<!-- Bring in your successful HTML/CSS from the Flexbox lab -->
+<!-- Try typing 'doc' at the top of this file and pressing "tab" -->
+<!-- if your development environment is set up correctly -->
+<!-- the Emmett plugin will set this file up for you -->
 
-    This is helpful for showing your client-side users when data is loading,
-    since there's otherwise no sign your app is thinking about something!
+<!-- Requirements -->
+<!-- Your page will need a form in it with an 'action' to /api and a single text field with an id/name of "resto" -->
+<!-- If you open /routes/apiRoutes and go to line 38 you will find the server side answer to your request! -->
 
-    Try placing it at the same level in your element tree as your Submit button
--->
+<!-- This week doesn't have a script.js file in it, because you're focusing on HTML and CSS -->
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Prof A's Labs for INST377</title>
+        <link rel="stylesheet" href="style.css" />
+    </head>
+    <body>
+        <div class="wrapper">
+            <header class="header">
+                <h1>Prof A INST377 Labs</h1>
+            </header>
+            <div class="container">
+                <div class="left_section box">
+                    <h2>Form Inputs</h2>
+                    <form action="/api" class="box main_form">
+                        <div>
+                        <label for="resto">Restaurant Name</label>
+                        <input type="text" name="resto" id="resto">
+                        </div>
+                        <div class="lds-ellipsis"></div><div></div><div></div><div></div><div></div>
+                        <button type="submit" id="get-resto">Submit</button>
+                    </form>
+                
+                </div>
+                <div class="right_section box">
+                    <h2>Local Restaurant Map</h2>
+                    <div class="box" id="restaurant_list">
+                        A list of restaurants from an API
+                        </div>
+                    </div> 
+                </div>
+            
+    <footer class="footer"> 
+      MY GITHUB ACCOUNT NAME<a href="https://github.com/cokoli4315">cokoli4315</a>
+    </footer>
+    </div>
+    <script src="./script.js"></script>
+    </body>
+</html>
