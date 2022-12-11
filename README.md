@@ -71,8 +71,3 @@ Core lab support code for INST377
       </div>
     </section>
   </body>
-<<<<<<< HEAD
-</html>
-=======
-</html>
->>>>>>> 5a3f3eadfbb71d372836e9ff15021a2f5e5e6421
