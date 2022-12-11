@@ -88,11 +88,10 @@ async function mainEvent() {
     Below this comment, we log out a table of all the results using "dot notation"
     An alternate notation would be "bracket notation" - arrayFromJson["data"]
     Dot notation is preferred in JS unless you have a good reason to use brackets
-    The 'data' key, which we set at line 38 in foodServiceRoutes.js, contains all 1,000 records we need
+  
   */
   // console.table(arrayFromJson.data);
 
-  // in your browser console, try expanding this object to see what fields are available to work with
   // for example: arrayFromJson.data[0].name, etc
   console.log(arrayFromJson.data[0]);
 
@@ -116,10 +115,9 @@ async function mainEvent() {
       markerPlace(filteredList, pageMap);
     });
 
-    // And here's an eventListener! It's listening for a "submit" button specifically being clicked
-    // this is a synchronous event event, because we already did our async request above, and waited for it to resolve
+ 
     form.addEventListener('submit', (submitEvent) => {
-      // This is needed to stop our page from changing to a new URL even though it heard a GET request
+  
       submitEvent.preventDefault();
 
       // This constant will have the value of your 15-restaurant collection when it processes
