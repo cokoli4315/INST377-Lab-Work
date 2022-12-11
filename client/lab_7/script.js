@@ -1,18 +1,17 @@
-
 function getRandomIntInclusive(min, max) {
   min = Math.ceil(min);
   max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min) + min); // The maximum is exclusive and the minimum is inclusive
+  return Math.floor(Math.random() * (max - min) + min); 
 }
 
 function injectHTML(list) {
   console.log('fired injectHTML');
-  const target = document.querySelector("#restaurant_list");
+  const target = document.querySelector('#restaurant_list');
   target.innerHTML = '';
 
   const listEl = document.createElement('ol');
   target.appendChild(listEl);
-  list.forEach(item => {
+  list.forEach((item) => {
     const el = document.createElement('li');
     el.innerText = item.name;
     listEl.appendChild(el);
@@ -25,7 +24,7 @@ function processRestaurants(list) {
   const newArray = range.map((item) => {
     const index = getRandomIntInclusive(0, list.length);
     return list[index];
-  })
+  });
   return newArray;
 }
 
@@ -66,7 +65,7 @@ async function mainEvent() {
     Dot notation is preferred in JS unless you have a good reason to use brackets
     The 'data' key, which we set at line 38 in foodServiceRoutes.js, contains all 1,000 records we need
   */
-  //console.table(arrayFromJson.data);
+  // console.table(arrayFromJson.data);
 
   // in your browser console, try expanding this object to see what fields are available to work with
   // for example: arrayFromJson.data[0].name, etc
@@ -78,11 +77,10 @@ async function mainEvent() {
   // This IF statement ensures we can't do anything if we don't have information yet
   if (arrayFromJson.data?.length > 0) { // the question mark in this means "if this is set at all"
     submit.style.display = 'block'; // let's turn the submit button back on by setting it to display as a block when we have data available
-    
 
     let currentList = [];
 
-    //hiddes the load button 
+    // hiddes the load button
     loadAnimation.classList.remove('lds-ellipsis');
     loadAnimation.classList.add('lds-ellipsis_hidden');
 
