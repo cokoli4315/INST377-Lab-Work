@@ -1,141 +1,144 @@
-const targetList = document.querySelector("tbody");
-const targetBox = document.querySelector(".tile");
+function getRandomIntInclusive(min, max) {
+  const newMin = Math.ceil(min);
+  const newMax = Math.floor(max);
+  return Math.floor(Math.random() * (newMax - newMin + 1) + newMin);
+}
 
-async function populateMacros() {
-  const customRequest = await fetch("/api/table/data");
-  const macrosData = await customRequest.json();
+function injectHTML(list) {
+  console.log('fired injectHTML');
+  const target = document.querySelector('#restaurant_list');
+  target.innerHTML = '';
 
-  macrosData.forEach((meal) => {
-    const appendItem = document.createElement("tr");
-    appendItem.innerHTML = `
-    <th>${meal["meal_id"]}</th>
-    <td>${meal["meal_name"]}</td>
-    <td>${meal["calories"]}</td>
-    <td>${meal["carbs"]}g</td>
-    <td>${meal["sodium"]}mg</td>
-    <td>${meal["protein"]}g</td>
-    <td>${meal["fat"]}g</td>
-    <td>${meal["cholesterol"]}mg</td>`;
-    targetList.append(appendItem);
+  const listEl = document.createElement('ol');
+  target.appendChild(listEl);
+  list.forEach((item) => {
+    const el = document.createElement('li');
+    el.innerText = item.name;
+    listEl.appendChild(el);
   });
 }
 
-//  This function fetches all dining halls and then populates the neraby restaurants on the home page
-async function populateRestaurants() {
-  const diningRequest = await fetch("/api/dining");
-  const diningData = await diningRequest.json();
+function processRestaurants(list) {
+  console.log('fired restaurants list');
+  const range = [...Array(15).keys()];
+  const newArray = range.map((item) => {
+    const index = getRandomIntInclusive(0, list.length);
+    return list[index];
+  });
+  return newArray;
+}
 
-  diningData["data"].forEach((restaurant) => {
-    const appendItem = document.createElement("div");
-    appendItem.classList.add("tile", "has-text-centered", "is-parent", "is-3");
-    appendItem.innerHTML = `
-    <article class="tile is-child box has-background-link-dark ">
-    <span class="subtitle has-text-light has-text-weight-bold">${
-      restaurant["hall_name"]
-    }</span>
-    <br />
-    <span class="has-text-light">${
-      restaurant["hall_address"].split(",")[0]
-    }</span>
-    <br/>
-    <span class="has-text-light">${
-      restaurant["hall_address"].split(",")[1]
-    }</span>
-    </article>`;
-    targetBox.append(appendItem);
+function filterList(list, filterInputValue) {
+  return list.filter((item) => {
+    if (!item.name) { return; }
+    const lowerCaseName = item.name.toLowerCase();
+    const lowerCaseQuery = filterInputValue.toLowerCase();
+    return lowerCaseName.includes(lowerCaseQuery);
   });
 }
-/* eslint-disable max-len */
-function mapScript() {
-  const mymap = L.map("mapid").setView([38.988751, -76.94774], 14);
 
-  L.tileLayer(
-    "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}",
-    {
-      attribution:
-        'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
-      maxZoom: 18,
-      id: "mapbox/streets-v11",
-      tileSize: 512,
-      zoomOffset: -1,
-      accessToken:
-        "pk.eyJ1IjoiYWxlaXRjaDEtdW1kLWVkdSIsImEiOiJjazhpdTF3Y28wYTIzM2twNnAxc2g2N2tnIn0.I1tMmZhRRNRt3LF7QnnB4g",
-    }
-  ).addTo(mymap);
-  return mymap;
+function initMap() {
+  console.log('initMap');
+  const map = L.map('map').setView([38.9897, -76.9378], 13);
+  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    maxZoom: 19,
+    attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+  }).addTo(map);
+  return map;
 }
 
-async function dataFilter(mapFromMapFunction) {
-  const form = document.querySelector("#search-form");
-  const search = document.querySelector("#search");
-  const targetList = document.querySelector(".target-list");
-  const replyMessage = document.querySelector(".reply-message");
-
-  const request = await fetch("/api/map/data");
-  const data = await request.json();
-
-  // this code fires when our form submits
-  // it filters our data list and returns it to the HTML
-  form.addEventListener("submit", async (event) => {
-    targetList.innerText = "";
-
-    event.preventDefault();
-    console.log("submit fired", search.value);
-    // eslint-disable-next-line max-len
-    // make sure each returned restaurant _can_ be plotted on the map by checking for the value we need
-    const filtered = data.filter(
-      (record) =>
-        (record.meal_name.toUpperCase().includes(search.value.toUpperCase()) &&
-          record.hall_lat) ||
-        (record.hall_name.toUpperCase().includes(search.value.toUpperCase()) &&
-          record.hall_lat)
-    );
-    const topFive = filtered.slice(0, 5);
-
-    if (topFive.length < 1) {
-      replyMessage.classList.add("box");
-      replyMessage.innerText = "No matches found";
+function markerPlace(array, map) {
+  map.eachLayer((layer) => {
+    if (layer instanceof L.Marker) {
+      layer.remove();
     }
+  });
+  array.forEach((item, index) => {
+    const {coordinates} = item.geocoded_column_1;
+    L.marker([coordinates[1], coordinates[0]]).addTo(map);
+    if (index == 0) {
+      map.setView([38.9897, -76.9378], 12);
+    }
+  });
+}
 
-    console.table(topFive);
+async function mainEvent() {
+  /*
+    ## Main Event
+      Separating your main programming from your side functions will help you organize your thoughts
+      When you're not working in a heavily-commented "learning" file, this also is more legible
+      If you separate your work, when one piece is complete, you can save it and trust it
+  */
+  const pageMap = initMap();
+  // the async keyword means we can make API requests
+  const form = document.querySelector('.main_form'); // get your main form so you can do JS with it
+  const submit = document.querySelector('#get-resto'); // get a reference to your submit button
+  const loadAnimation = document.querySelector('.lds-ellipsis');
+  submit.style.display = 'none'; // let your submit button disappear
 
-    topFive.forEach((item) => {
-      const Lat = item.hall_lat;
-      const Long = item.hall_long;
-      console.log("markerLongLat", Long, Lat);
-      const marker = L.marker([Lat, Long]).addTo(mapFromMapFunction);
-      const popup = L.popup()
-        .setLatLng([Lat, Long])
-        .setContent(`<p>${item.hall_name}</p>`)
-        .openOn(mapFromMapFunction);
-      marker.bindPopup(popup).openPopup();
-      mapFromMapFunction.addLayer(marker);
-      const appendItem = document.createElement("li");
-      appendItem.classList.add("block", "list-item");
-      appendItem.innerHTML = `<div class="block"><div class="list-header is-size-5">${item.meal_name}</div><address class="is-size-6">${item.hall_name}</address></div>`;
-      targetList.append(appendItem);
+  /*
+    Let's get some data from the API - it will take a second or two to load
+    This next line goes to the request for 'GET' in the file at /server/routes/foodServiceRoutes.js
+    It's at about line 27 - go have a look and see what we're retrieving and sending back.
+   */
+  const results = await fetch('/api/foodServicePG');
+  const arrayFromJson = await results.json(); 
+
+  /*
+    Below this comment, we log out a table of all the results using "dot notation"
+    An alternate notation would be "bracket notation" - arrayFromJson["data"]
+    Dot notation is preferred in JS unless you have a good reason to use brackets
+    The 'data' key, which we set at line 38 in foodServiceRoutes.js, contains all 1,000 records we need
+  */
+  // console.table(arrayFromJson.data);
+
+  // in your browser console, try expanding this object to see what fields are available to work with
+  // for example: arrayFromJson.data[0].name, etc
+  console.log(arrayFromJson.data[0]);
+
+  // this is called "string interpolation" and is how we build large text blocks with variables
+  console.log(`${arrayFromJson.data[0].name} ${arrayFromJson.data[0].category}`);
+
+  // This IF statement ensures we can't do anything if we don't have information yet
+  if (arrayFromJson.data?.length > 0) { // the question mark in this means "if this is set at all"
+    submit.style.display = 'block'; // let's turn the submit button back on by setting it to display as a block when we have data available
+
+    let currentList = [];
+
+    // hiddes the load button
+    loadAnimation.classList.remove('lds-ellipsis');
+    loadAnimation.classList.add('lds-ellipsis_hidden');
+
+    form.addEventListener('input', (event) => {
+      console.log(event.target.value);
+      const filteredList = filterList(currentList, event.target.value);
+      injectHTML(filteredList);
+      markerPlace(filteredList, pageMap);
     });
-    const Lat = topFive[0]?.hall_lat;
-    const Long = topFive[0]?.hall_long;
-    console.log("viewSet coords", Lat, Long);
-    mapFromMapFunction.panTo([Lat, Long], 0);
-  });
 
-  // this listens for typing into our input box
-  search.addEventListener("input", (event) => {
-    console.log("input", event.target.value);
-    if (search.value.length === 0) {
-      // clear your "no matches found" code
-      targetList.innerText = "";
-    }
-  });
+    // And here's an eventListener! It's listening for a "submit" button specifically being clicked
+    // this is a synchronous event event, because we already did our async request above, and waited for it to resolve
+    form.addEventListener('submit', (submitEvent) => {
+      // This is needed to stop our page from changing to a new URL even though it heard a GET request
+      submitEvent.preventDefault();
+
+      // This constant will have the value of your 15-restaurant collection when it processes
+      currentList = processRestaurants(arrayFromJson.data);
+
+      // And this function call will perform the "side effect" of injecting the HTML list for you
+      injectHTML(currentList);
+      markerPlace(currentList, pageMap);
+
+      // By separating the functions, we open the possibility of regenerating the list
+      // without having to retrieve fresh data every time
+      // We also have access to some form values, so we could filter the list based on name
+    });
+  }
 }
 
-async function windowActions() {
-  populateMacros();
-  populateRestaurants();
-  const mapObject = mapScript(); // Load your map
-  await dataFilter(mapObject); // load your food data
-}
-
-window.onload = windowActions;
+/*
+  This last line actually runs first!
+  It's calling the 'mainEvent' function at line 57
+  It runs first because the listener is set to when your HTML content has loaded
+*/
+document.addEventListener('DOMContentLoaded', async () => mainEvent()); // the async keyword means we can make API requests
