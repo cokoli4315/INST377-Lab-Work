@@ -52,26 +52,9 @@ function processRestaurants(list) {
     return list[index];
   });
   return newArray;
-  /*
-      ## Process Data Separately From Injecting It
-        This function should accept your 1,000 records
-        then select 15 random records
-        and return an object containing only the restaurant's name, category, and geocoded location
-        So we can inject them using the HTML injection function
-
-        You can find the column names by carefully looking at your single returned record
-        https://data.princegeorgescountymd.gov/Health/Food-Inspection/umjn-t2iz
-
-      ## What to do in this function:
-
-      - Create an array of 15 empty elements (there are a lot of fun ways to do this, and also very basic ways)
-      - using a .map function on that range,
-      - Make a list of 15 random restaurants from your list of 100 from your data request
-      - Return only their name, category, and location
-      - Return the new list of 15 restaurants so we can work on it separately in the HTML injector
-    */
 }
-function filterList(array, filterInputValue) {
+
+function filterList(list, filterInputValue) {
   return list.filter((item) => {
     if (!item.name) { return; }
     const lowerCaseName = item.name.toLowerCase();
@@ -79,6 +62,7 @@ function filterList(array, filterInputValue) {
     return lowerCaseName.includes(lowerCaseQuery);
   });
 }
+
 function initMap() {
   console.log('initMap');
   const map = L.map('map').setView([38.9897, -76.9378], 13);
